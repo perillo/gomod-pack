@@ -89,10 +89,16 @@ func GetModule() (*Module, error) {
 
 // DownloadModule downloads the specified module and return the cached module
 // informations.
-// TODO(mperillo): Add support for specifying the module version to download.
-func DownloadModule(env []string, module string) (*CachedModule, error) {
-	// Use @master to force cmd/go to find the remote module.
-	buf, err := invokeGo(env, "mod", "download", "-json", module+"@master")
+func DownloadModule(env []string, module, version string) (*CachedModule, error) {
+	modpath := module
+	if version == "" {
+		// Use @master to force cmd/go to find the remote module.
+		modpath = modpath + "@master"
+	} else {
+		modpath = modpath + "@" + version
+	}
+
+	buf, err := invokeGo(env, "mod", "download", "-json", modpath)
 	if err != nil && len(buf) == 0 {
 		// Special case, since go mod download -json returns an exit status 1
 		// in case of errors, in addition of setting Module.Error, as with go

@@ -5,6 +5,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"path/filepath"
@@ -26,16 +27,20 @@ func pack(module *Module) (*CachedModule, error) {
 	env := NewEnviron(module.Path, gitdir)
 	debugf("env: %s", env)
 
-	return DownloadModule(env, module.Path)
+	return DownloadModule(env, module.Path, module.Version)
 }
 
+var version = flag.String("version", "master", "module version")
+
 func main() {
+	flag.Parse()
 	log.SetFlags(0)
 
 	mod, err := GetModule()
 	if err != nil {
 		log.Fatal(err)
 	}
+	mod.Version = *version
 	debugf("module: %+v", mod)
 
 	cmod, err := pack(mod)
