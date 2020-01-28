@@ -15,7 +15,7 @@ import (
 
 const (
 	gitTemplate = `#!/bin/sh
-{{ .GitPath }} -c url."ssh://{{ .User }}@localhost:{{ .Path }}".insteadOf=https://{{ .ModPath }}
+{{ .GitPath }} -c url.ssh://{{ .User }}@localhost:{{ .Path }}.insteadof=https://{{ .ModPath }} "$@"
 `
 )
 
