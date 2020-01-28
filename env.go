@@ -36,8 +36,8 @@ func NewEnviron(modpath, path string) environ {
 	env.Set("GOPRIVATE", modpath)
 	env.Set("GOPROXY", "direct")
 
-	// Set GOPATH to only have the custom git script path.
-	env.Set("PATH", path)
+	// Set GOPATH to have the custom git script path at the front.
+	env.SetList("PATH", path, os.Getenv("PATH"))
 
 	return env
 }
