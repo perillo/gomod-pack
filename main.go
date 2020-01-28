@@ -17,7 +17,6 @@ import (
 // directory.
 //
 // pack will return the cached module or an error.
-// TODO(mperillo): Add support for specifying the module version to pack.
 func pack(module *Module) (*CachedModule, error) {
 	gitpath, err := InstallGit(module.Path, module.Dir)
 	if err != nil {
