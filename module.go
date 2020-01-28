@@ -60,11 +60,15 @@ func invokeGo(env []string, verb string, args ...string) ([]byte, error) {
 
 	if err := cmd.Run(); err != nil {
 		// Just return the error, including the stderr output as is.
-		// Make sure to also return stdout.Bytes(), since it may contain
-		// important data.
+		// Make sure to also return stdout.Bytes() if there is some data, since
+		// it may be important.
 		args := strings.Trim(fmt.Sprint(args), "[]")
+		var buf []byte
+		if stdout.Len() > 0 {
+			buf = stdout.Bytes()
+		}
 
-		return stdout.Bytes(), fmt.Errorf("go %v: %w: %s", args, err, stderr)
+		return buf, fmt.Errorf("go %v: %w: %s", args, err, stderr)
 	}
 
 	return stdout.Bytes(), nil
@@ -103,7 +107,7 @@ func DownloadModule(env []string, module, version string) (*CachedModule, error)
 	}
 
 	buf, err := invokeGo(env, "mod", "download", "-json", modpath)
-	if err != nil && len(buf) == 0 {
+	if err != nil && buf == nil {
 		// Special case, since go mod download -json returns an exit status 1
 		// in case of errors, in addition of setting Module.Error, as with go
 		// list -m -e -json.
