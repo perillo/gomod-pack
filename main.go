@@ -36,13 +36,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	debugf("module: %v", mod)
+	debugf("module: %+v", mod)
 
 	cmod, err := pack(mod)
 	if err != nil {
 		log.Fatal(err)
 	}
-	debugf("cached module: %v", cmod)
+	debugf("cached module: %+v", cmod)
 }
 
 func debugf(format string, a ...interface{}) {
