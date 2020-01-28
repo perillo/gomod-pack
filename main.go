@@ -45,8 +45,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Print the versioned module path so that can specify it in a go.mod
-	// require directive
+	// Print the versioned module path so that it can be used in a go.mod
+	// require directive.
 	fmt.Println(cmod)
 }
 
