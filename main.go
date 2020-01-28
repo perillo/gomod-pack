@@ -25,7 +25,6 @@ func pack(module *Module) (*CachedModule, error) {
 	}
 	gitdir := filepath.Dir(gitpath)
 	env := NewEnviron(module.Path, gitdir)
-	debugf("env: %s", env)
 
 	return DownloadModule(env, module.Path, module.Version)
 }
@@ -41,13 +40,11 @@ func main() {
 		log.Fatal(err)
 	}
 	mod.Version = *version
-	debugf("module: %+v", mod)
 
 	cmod, err := pack(mod)
 	if err != nil {
 		log.Fatal(err)
 	}
-	debugf("cached module: %#+v", cmod)
 
 	// Print the versioned module path so that can specify it in a go.mod
 	// require directive
