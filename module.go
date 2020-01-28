@@ -41,6 +41,10 @@ type CachedModule struct {
 	GoModSum string // checksum for go.mod (as in go.sum)
 }
 
+func (cm *CachedModule) String() string {
+	return cm.Path + "@" + cm.Version
+}
+
 // invokeGo returns the stdout of a go command invocation.
 // The implementation is based on golang.org/x/tools/go/packages, but greatly
 // simplified.

@@ -47,7 +47,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	debugf("cached module: %+v", cmod)
+	debugf("cached module: %#+v", cmod)
+
+	// Print the versioned module path so that can specify it in a go.mod
+	// require directive
+	fmt.Println(cmod)
 }
 
 func debugf(format string, a ...interface{}) {
