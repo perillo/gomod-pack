@@ -39,8 +39,14 @@ func pack(module *Module) (*CachedModule, error) {
 var version = flag.String("version", "master", "module version")
 
 func main() {
-	flag.Parse()
 	log.SetFlags(0)
+	flag.Usage = func() {
+		w := flag.CommandLine.Output()
+		fmt.Fprintln(w, "Usage: gomod-pack [-version]")
+		fmt.Fprintf(w, "Flags:\n")
+		flag.PrintDefaults()
+	}
+	flag.Parse()
 
 	mod, err := GetModule()
 	if err != nil {
