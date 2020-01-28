@@ -7,7 +7,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"path/filepath"
 )
 
@@ -24,12 +23,10 @@ func pack(module *Module) (*CachedModule, error) {
 		return nil, err
 	}
 	gitdir := filepath.Dir(gitpath)
-	UpdateEnviron(module.Path, gitdir)
-	debugf("gitdir: %q", gitdir)
-	debugf("GOPRIVATE: %v", os.Getenv("GOPRIVATE"))
-	debugf("PATH: %v", os.Getenv("PATH"))
+	env := NewEnviron(module.Path, gitdir)
+	debugf("env: %s", env)
 
-	return DownloadModule(module.Path)
+	return DownloadModule(env, module.Path)
 }
 
 func main() {

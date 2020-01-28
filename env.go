@@ -9,23 +9,35 @@ import (
 	"strings"
 )
 
-func joinList(pathlist []string) string {
-	return strings.Join(pathlist, string(os.PathListSeparator))
+type environ []string
+
+func (env *environ) Set(key, value string) {
+	*env = append(*env, key+"="+value)
 }
 
-// UpdateEnviron updates the environment with a custom GOPRIVATE, GOPROXY and
-// PATH environment variables.
-func UpdateEnviron(modpath, path string) {
+func (env *environ) SetList(key string, values ...string) {
+	value := joinList(values...)
+	env.Set(key, value)
+}
+
+func joinList(paths ...string) string {
+	return strings.Join(paths, string(os.PathListSeparator))
+}
+
+// NewEnviron returns a minimal environment with a custom GOPRIVATE, GOPROXY
+// and PATH environment variables.
+func NewEnviron(modpath, path string) environ {
+	env := make(environ, 0, 10)
+	env.Set("HOME", os.Getenv("HOME"))
+	env.Set("GO111MODULE", "on")
+
 	// Set modpath private to avoid the use of GOPROXY and GOSUMDB and use a
 	// direct connection to force the use of git.
-	os.Setenv("GOPRIVATE", modpath)
-	os.Setenv("GOPROXY", "direct")
+	env.Set("GOPRIVATE", modpath)
+	env.Set("GOPROXY", "direct")
 
-	// Set the path with the custom git script at the front.
-	oldpath := os.Getenv("PATH")
-	if oldpath == "" {
-		os.Setenv("PATH", path)
-	} else {
-		os.Setenv("PATH", joinList([]string{path, oldpath}))
-	}
+	// Set GOPATH to only have the custom git script path.
+	env.Set("PATH", path)
+
+	return env
 }

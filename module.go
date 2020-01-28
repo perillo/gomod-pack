@@ -44,12 +44,13 @@ type CachedModule struct {
 // invokeGo returns the stdout of a go command invocation.
 // The implementation is based on golang.org/x/tools/go/packages, but greatly
 // simplified.
-func invokeGo(verb string, args ...string) ([]byte, error) {
+func invokeGo(env []string, verb string, args ...string) ([]byte, error) {
 	args = append([]string{verb}, args...)
 	stdout := new(bytes.Buffer)
 	stderr := new(bytes.Buffer)
 
 	cmd := exec.Command("go", args...)
+	cmd.Env = env
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
 
@@ -67,7 +68,7 @@ func invokeGo(verb string, args ...string) ([]byte, error) {
 
 // GetModule returns the current main module.
 func GetModule() (*Module, error) {
-	buf, err := invokeGo("list", "-m", "-e", "-json")
+	buf, err := invokeGo(nil, "list", "-m", "-e", "-json")
 	if err != nil {
 		return nil, fmt.Errorf("get module: %w", err)
 	}
@@ -89,9 +90,9 @@ func GetModule() (*Module, error) {
 // DownloadModule downloads the specified module and return the cached module
 // informations.
 // TODO(mperillo): Add support for specifying the module version to download.
-func DownloadModule(module string) (*CachedModule, error) {
+func DownloadModule(env []string, module string) (*CachedModule, error) {
 	// Use @master to force cmd/go to find the remote module.
-	buf, err := invokeGo("mod", "download", "-json", module+"@master")
+	buf, err := invokeGo(env, "mod", "download", "-json", module+"@master")
 	if err != nil && len(buf) == 0 {
 		// Special case, since go mod download -json returns an exit status 1
 		// in case of errors, in addition of setting Module.Error, as with go
